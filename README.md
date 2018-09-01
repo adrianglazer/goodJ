@@ -6,7 +6,7 @@ Just include goodJ.jar in your class path.
 
 ### Use case scenario
 
-1. You have to create a main class where you will run new Application. Application name has to be a package name of your app (see example)
+You have to create a main class where you will run new Application. Application name has to be a package name of your app (see example)
 
 ```java
 package goodJExample;
@@ -22,7 +22,7 @@ public class MainApp
 }
 ```
 
-2. Your main class will invoke first controller named "mainController" and action which is an annotated method inside it.
+Your main class will invoke first controller named "mainController" and action which is an annotated method inside it.
 
 ```java
 package goodJExample;
@@ -42,7 +42,7 @@ public class MainController extends AbstractController
 }
 ```
 
-3. Method "mainAction" will create our first view. View annotation has an additional "type" parameter which can be SINGLE_VIEW or MULTIPLE_VIEW. First one simply prevents from opening many windows. For example when button click should open a settings window then another button click will only focus on already opened window.
+Method "mainAction" will create our first view. View annotation has an additional "type" parameter which can be SINGLE_VIEW or MULTIPLE_VIEW. First one simply prevents from opening many windows. For example when button click should open a settings window then another button click will only focus on already opened window.
 
 In below example notice also the Bind annotation above JButton. This automatically binds button to some action in any controller.
 
@@ -119,4 +119,57 @@ public class MainView extends AbstractView
 }
 ```
 
-4. When you click "Save" button
+When you click "Save" button then another controllers action will be invoked. Inside save action is an example of how to get our current view and how to get a service from our application instance. To get correct view you have to simply get all built views with correct name. For service there is a method to get one by name.
+
+```java
+package goodJExample;
+
+import goodJ.Abstract.AbstractController;
+import goodJ.Annotation.Action;
+import goodJ.Annotation.Controller;
+
+@Controller(name="anotherController")
+public class AnotherController extends AbstractController
+{
+    @Action(name="saveAction")
+    public void saveAction()
+    {
+        MainView view = (MainView) this.getApplication().getBuiltViews("mainView").get(0);
+        ExampleService service = (ExampleService) this.getApplication().getService("exampleService");
+        
+        service.saveTextToFile(view.getTextFromTextArea());
+    }
+    
+    @Action(name="cancelAction")
+    public void cancelAction()
+    {
+        this.getApplication().close();
+    }
+}
+```
+
+When user clicks "Save" button then through "saveAction" a services method will be invoked and text data will be passed from view.
+
+```java
+package goodJExample;
+
+import javax.swing.JOptionPane;
+
+import goodJ.Annotation.Service;
+
+@Service(name="exampleService")
+public class ExampleService
+{
+    public void saveTextToFile(String text)
+    {
+        JOptionPane.showMessageDialog(null, text, " Success", JOptionPane.INFORMATION_MESSAGE);
+    }
+}
+
+```
+
+Our service will only show a dialog message with text we typed inside JTextArea.
+
+And this is it!
+
+Fast and simple MVC window application. Happy coding!
