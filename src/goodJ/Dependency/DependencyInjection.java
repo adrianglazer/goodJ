@@ -144,6 +144,16 @@ public class DependencyInjection
 								invokeMethod(bindData[0], bindData[1]);
 							}
 						});
+					} else if ( o.getClass().equals(JComboBox.class) ) {
+						JComboBox jb = (JComboBox) o.getClass().cast(o);
+						jb.addActionListener(new ActionListener() {
+
+							@Override
+							public void actionPerformed(ActionEvent e)
+							{
+								invokeMethod(bindData[0], bindData[1]);
+							}
+						});
 					} else {
 						throw new BindException();
 					}
